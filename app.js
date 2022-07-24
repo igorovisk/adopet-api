@@ -11,9 +11,12 @@ const { connectToDatabase } = require("./database/db");
 app.use(cors());
 app.use(bodyParser.json());
 
+//ROUTES
 app.use("/users", routes.users);
 app.use("/login", routes.auth);
+app.use("/pets", routes.pets);
 
+//DATABASE
 (async function establishDbConnectionAndListenToPort() {
    await connectToDatabase().then(() => {
       app.listen(4000, () => {

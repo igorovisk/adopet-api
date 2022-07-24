@@ -1,5 +1,6 @@
 const User = require("../../models/User.js");
 const { encrypt } = require("../utils/crypto");
+const { userSchema } = require("../../schemas/UserSchema");
 
 const getAll = async function (req, res) {
    try {
@@ -14,6 +15,12 @@ const createUser = async function (req, res) {
    const { name, email, password, tel } = req.body;
 
    try {
+      const checkIfUserIsValid = await userSchema.validate(req.body);
+
+      if (checkIfUserIsValid.error) {
+         throw new Error(checkIfUserIsValid.error);
+      }
+
       const doesUserExist = await User.exists({ email: email });
 
       if (!doesUserExist) {
@@ -21,6 +28,7 @@ const createUser = async function (req, res) {
          await encrypt(password).then((res) => {
             encryptedPassword = res;
          });
+
          const newUser = { name, email, password: encryptedPassword, tel };
 
          await User.create(newUser);
